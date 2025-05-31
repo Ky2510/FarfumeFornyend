@@ -20,7 +20,9 @@ import FormMarket from './pages/Form/FormMarket';
 import FormInputMarket from './pages/Form/FormInputMarket';
 import FormEditMarket from './pages/Form/FormEditMarket';
 import FormSupplies from './pages/Form/supplies/FormSupplies';
+import FormPermissions from './pages/Form/Permissions/FormPermissions';
 import FormInputSupplies from './pages/Form/supplies/FormInputSupplies';
+import FormInputHakAkses from './pages/Form/Permissions/FormInputHakAkses';
 import FormEditSupplies from './pages/Form/supplies/FormEditSupplies';
 import Index from './pages/Home/Index';
 import HomeEcommerceLayout from './HomeEcommerceLayout'
@@ -52,12 +54,12 @@ interface Supplie {
   kode_barang: string;
 }
 
-interface Kariawan{
-  id:number
-  nik:string
-  nama:string
-  kelamin:string
-  jabatan:string
+interface Kariawan {
+  id: number
+  nik: string
+  nama: string
+  kelamin: string
+  jabatan: string
 }
 
 interface Pengiriman {
@@ -67,12 +69,12 @@ interface Pengiriman {
   jumlah_kirim: number;
   tanggal: string;
   market?: {
-      id: number;
-      nama: string;
+    id: number;
+    nama: string;
   };
   supplie?: {
-      id: number;
-      nama: string;
+    id: number;
+    nama: string;
   };
 }
 
@@ -83,26 +85,27 @@ interface Penjualan {
   terjual: number;
   tanggal: string;
   market?: {
-      id: number;
-      nama: string;
+    id: number;
+    nama: string;
   };
   supplie?: {
-      id: number;
-      nama: string;
+    id: number;
+    nama: string;
   };
 }
 
-interface BarangMasuk{
-  id:number;
-  id_supplie:number;
-  juml_masuk:number;
-  tanggal_masuk:string;
+interface BarangMasuk {
+  id: number;
+  id_supplie: number;
+  juml_masuk: number;
+  tanggal_masuk: string;
 }
 
 function App() {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [barangMasuk, setBarangMasuk] = useState<BarangMasuk[]>([]);
   const [supplies, setSupplies] = useState<Supplie[]>([]);
+  const [hakAkses, setHakAkses] = useState<Supplie[]>([]);
   const [kariawan, setKariawan] = useState<Kariawan[]>([]);
   const [pengiriman, setPengiriman] = useState<Pengiriman[]>([]);
   const [penjualan, setPenjualan] = useState<Penjualan[]>([]);
@@ -111,24 +114,28 @@ function App() {
   const handleMarketAdded = (newMarket: Market) => {
     setMarkets((prevMarkets) => [...prevMarkets, newMarket]);
   };
-  
+
   const handleBarangMasukAdded = (newBarangMasuk: BarangMasuk) => {
     setBarangMasuk((prevBarangMasuk) => [...prevBarangMasuk, newBarangMasuk]);
   };
-  
+
   const handleSuppliesAdded = (newSupplies: Supplie) => {
     setSupplies((prevSupplies) => [...prevSupplies, newSupplies]);
   }
 
-  const handleKariawanAdded = (newKariawan : Kariawan)=>{
+  const handleHakAksesAdded = (newHakAkses: Supplie) => {
+    setHakAkses((prevHakAkses) => [...prevHakAkses, newHakAkses]);
+  }
+
+  const handleKariawanAdded = (newKariawan: Kariawan) => {
     setKariawan((prevKariawan) => [...prevKariawan, newKariawan]);
   }
-  
-  const handlePengirimanAdded = (newPengiriman : Pengiriman)=>{
+
+  const handlePengirimanAdded = (newPengiriman: Pengiriman) => {
     setPengiriman((prevPengiriman) => [...prevPengiriman, newPengiriman]);
   }
-  
-  const handlePenjualanAdded = (newPenjualan : Penjualan)=>{
+
+  const handlePenjualanAdded = (newPenjualan: Penjualan) => {
     setPenjualan((prevPenjualan) => [...prevPenjualan, newPenjualan]);
   }
 
@@ -147,17 +154,17 @@ function App() {
     console.log("Current barangMasuk:", barangMasuk);
   }, [barangMasuk]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Current kariawan", kariawan)
-  },[kariawan])
+  }, [kariawan])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Current pengiriman", pengiriman)
-  },[pengiriman])
+  }, [pengiriman])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Current penjualan", penjualan)
-  },[penjualan])
+  }, [penjualan])
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -172,73 +179,80 @@ function App() {
   }
 
   return (
-<AuthProvider>
-    <Routes>
-      {/* Rute Autentikasi - Tidak Dilindungi */}
-      <Route path="/auth" element={<AuthLayout />}>
-        <Route path="signin" element={<SignIn />} />
-        <Route path="signup" element={<SignUp />} />
-      </Route>
+    <AuthProvider>
+      <Routes>
+        {/* Rute Autentikasi - Tidak Dilindungi */}
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} />
+        </Route>
 
-      {/* Home Ecommerce - Tidak Dilindungi */}
-      <Route path="/home-ecomerse" element={<HomeEcommerceLayout><Index /></HomeEcommerceLayout>} />
+        {/* Home Ecommerce - Tidak Dilindungi */}
+        <Route path="/home-ecomerse" element={<HomeEcommerceLayout><Index /></HomeEcommerceLayout>} />
 
-      {/* Rute yang Dilindungi */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <DefaultLayout />
-          </ProtectedRoute>
-        }
-      >
-        {/* Dashboard - Halaman Utama setelah login */}
-        <Route index element={<><PageTitle title="Dashboard" /><ECommerce /></>} />
-        
-        {/* Menu Utama */}
-        <Route path="kalender" element={<><PageTitle title="Kalender" /><Calendar /></>} />
-        <Route path="profil" element={<><PageTitle title="Profil" /><Profile /></>} />
-        <Route path="tabel" element={<><PageTitle title="Tabel" /><Tables /></>} />
-        <Route path="pengaturan" element={<><PageTitle title="Pengaturan" /><Settings /></>} />
-        <Route path="grafik" element={<><PageTitle title="Grafik" /><Chart /></>} />
-        <Route path="ui/peringatan" element={<><PageTitle title="Peringatan" /><Alerts /></>} />
-        <Route path="ui/tombol" element={<><PageTitle title="Tombol" /><Buttons /></>} />
+        {/* Rute yang Dilindungi */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DefaultLayout />
+            </ProtectedRoute>
+          }
+        >
+          {/* Dashboard - Halaman Utama setelah login */}
+          <Route index element={<><PageTitle title="Dashboard" /><ECommerce /></>} />
 
-        {/* Market Routes */}
-        <Route path="form-market" element={<><PageTitle title="Form Market" /><FormMarket /></>} />
-        <Route path="form-input-market" element={<><PageTitle title="Input Market" /><FormInputMarket onMarketAdded={handleMarketAdded} /></>} />
-        <Route path="form-edit-market/:id" element={<><PageTitle title="Edit Market" /><FormEditMarket /></>} />
+          {/* Menu Utama */}
+          <Route path="kalender" element={<><PageTitle title="Kalender" /><Calendar /></>} />
+          <Route path="profil" element={<><PageTitle title="Profil" /><Profile /></>} />
+          <Route path="tabel" element={<><PageTitle title="Tabel" /><Tables /></>} />
+          <Route path="pengaturan" element={<><PageTitle title="Pengaturan" /><Settings /></>} />
+          <Route path="grafik" element={<><PageTitle title="Grafik" /><Chart /></>} />
+          <Route path="ui/peringatan" element={<><PageTitle title="Peringatan" /><Alerts /></>} />
+          <Route path="ui/tombol" element={<><PageTitle title="Tombol" /><Buttons /></>} />
 
-        {/* Supplies Routes */}
-        <Route path="form-supplies" element={<><PageTitle title="Supplies" /><FormSupplies /></>} />
-        <Route path="form-input-supplies" element={<><PageTitle title="Input Supplies" /><FormInputSupplies onSuppliesAdded={handleSuppliesAdded} /></>} />
-        <Route path="form-edit-supplies/:id" element={<><PageTitle title="Edit Supplies" /><FormEditSupplies /></>} />
+          {/* Market Routes */}
+          <Route path="form-market" element={<><PageTitle title="Form Market" /><FormMarket /></>} />
+          <Route path="form-input-market" element={<><PageTitle title="Input Market" /><FormInputMarket onMarketAdded={handleMarketAdded} /></>} />
+          <Route path="form-edit-market/:id" element={<><PageTitle title="Edit Market" /><FormEditMarket /></>} />
 
-        {/* Karyawan Routes */}
-        <Route path="form-kariawan" element={<><PageTitle title="Karyawan" /><FormKariawan /></>} />
-        <Route path="form-input-kariawan" element={<><PageTitle title="Input Karyawan" /><FormInputKariawan onKariawanAdded={handleKariawanAdded} /></>} />
-        <Route path="form-edit-kariawan/:id" element={<><PageTitle title="Edit Karyawan" /><FormEditKariawan /></>} />
+          {/* Supplies Routes */}
+          <Route path="form-supplies" element={<><PageTitle title="Supplies" /><FormSupplies /></>} />
+          <Route path="form-input-supplies" element={<><PageTitle title="Input Supplies" /><FormInputSupplies onSuppliesAdded={handleSuppliesAdded} /></>} />
+          <Route path="form-edit-supplies/:id" element={<><PageTitle title="Edit Supplies" /><FormEditSupplies /></>} />
 
-        {/* Pengiriman Routes */}
-        <Route path="form-pengiriman" element={<><PageTitle title="Pengiriman" /><FormPengiriman /></>} />
-        <Route path="form-input-pengiriman" element={<><PageTitle title="Input Pengiriman" /><FormInputPengiriman markets={markets} supplies={supplies} onPengirimanAdded={handlePengirimanAdded} /></>} />
-        <Route path="form-edit-pengiriman/:id" element={<><PageTitle title="Edit Pengiriman" /><FormEditPengiriman /></>} />
+          {/* Permission */}
+          <Route path="form-permissions" element={<><PageTitle title="Supplies" /><FormPermissions /></>} />
 
-        {/* Penjualan Routes */}
-        <Route path="form-penjualan" element={<><PageTitle title="Penjualan" /><FormPenjualan /></>} />
-        <Route path="form-input-penjualan" element={<><PageTitle title="Input Penjualan" /><FormInputPenjualan markets={markets} supplies={supplies} onPenjualanAdded={handlePenjualanAdded} /></>} />
-        <Route path="form-edit-penjualan/:id" element={<><PageTitle title="Edit Penjualan" /><FormEditPenjualan /></>} />
+          <Route path="form-input-permissions" element={<><PageTitle title="Hak Akses" /><FormInputHakAkses onHakAksesAdded={handleHakAksesAdded} /></>} />
 
-        {/* Barang Masuk Routes */}
-        <Route path="form-barang-masuk" element={<><PageTitle title="Barang Masuk" /><FormBarangMasuk /></>} />
-        <Route path="form-input-barang-masuk" element={<><PageTitle title="Input Barang Masuk" /><FormInputBarangMasuk supplies={supplies} onBarangMasukAdded={handleBarangMasukAdded} /></>} />
-        <Route path="form-edit-barang-masuk/:id" element={<><PageTitle title="Edit Barang Masuk" /><FormEditBarangMasuk /></>} />
+          {/* Karyawan Routes */}
+          <Route path="form-kariawan" element={<><PageTitle title="Karyawan" /><FormKariawan /></>} />
+          <Route path="form-input-kariawan" element={<><PageTitle title="Input Karyawan" /><FormInputKariawan onKariawanAdded={handleKariawanAdded} /></>} />
+          <Route path="form-edit-kariawan/:id" element={<><PageTitle title="Edit Karyawan" /><FormEditKariawan /></>} />
 
-        {/* Stok Produk Routes */}
-        <Route path="form-stockproduk" element={<><PageTitle title="Stok Produk" /><FormStock /></>} />
-      </Route>
-    </Routes>
-  </AuthProvider>
+          {/* Pengiriman Routes */}
+          <Route path="form-pengiriman" element={<><PageTitle title="Pengiriman" /><FormPengiriman /></>} />
+          <Route path="form-input-pengiriman" element={<><PageTitle title="Input Pengiriman" /><FormInputPengiriman markets={markets} supplies={supplies} onPengirimanAdded={handlePengirimanAdded} /></>} />
+          <Route path="form-edit-pengiriman/:id" element={<><PageTitle title="Edit Pengiriman" /><FormEditPengiriman /></>} />
+
+          {/* Penjualan Routes */}
+          <Route path="form-penjualan" element={<><PageTitle title="Penjualan" /><FormPenjualan /></>} />
+          <Route path="form-input-penjualan" element={<><PageTitle title="Input Penjualan" /><FormInputPenjualan markets={markets} supplies={supplies} onPenjualanAdded={handlePenjualanAdded} /></>} />
+          <Route path="form-edit-penjualan/:id" element={<><PageTitle title="Edit Penjualan" /><FormEditPenjualan /></>} />
+
+          {/* Barang Masuk Routes */}
+          <Route path="form-barang-masuk" element={<><PageTitle title="Barang Masuk" /><FormBarangMasuk /></>} />
+          <Route path="form-input-barang-masuk" element={<><PageTitle title="Input Barang Masuk" /><FormInputBarangMasuk supplies={supplies} onBarangMasukAdded={handleBarangMasukAdded} /></>} />
+          <Route path="form-edit-barang-masuk/:id" element={<><PageTitle title="Edit Barang Masuk" /><FormEditBarangMasuk /></>} />
+
+
+
+          {/* Stok Produk Routes */}
+          <Route path="form-stockproduk" element={<><PageTitle title="Stok Produk" /><FormStock /></>} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 
